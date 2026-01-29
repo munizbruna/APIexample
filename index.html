@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula: Consumo de API FakeStore</title>
+    <!-- Importando Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos adicionais específicos */
+        .card-image {
+            height: 200px;
+            object-fit: contain; /* Garante que a imagem apareça inteira */
+            width: 100%;
+            padding: 10px;
+        }
+        
+        /* Animação simples de loading */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+    <!-- Cabeçalho -->
+    <header class="bg-blue-600 text-white p-6 shadow-md">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Conceito de API</h1>
+                <p class="text-blue-100 text-sm">Consumindo dados da FakeStoreAPI</p>
+            </div>
+            <button id="btnCarregar" class="mt-4 md:mt-0 bg-white text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-200 transition duration-300 shadow-sm active:scale-95">
+                Carregar Produtos
+            </button>
+        </div>
+    </header>
+
+    <!-- Área Principal -->
+    <main class="container mx-auto p-6">
+        
+        <!-- Estado de Carregamento (Inicialmente escondido) -->
+        <div id="loading" class="hidden text-center py-10">
+            <div class="spinner"></div>
+            <p class="text-gray-500 mt-2">Buscando dados no servidor...</p>
+        </div>
+
+        <!-- Estado de Erro (Inicialmente escondido) -->
+        <div id="error" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+            <p class="font-bold">Erro de Conexão</p>
+            <p id="errorMessage">Não foi possível carregar os produtos.</p>
+        </div>
+
+        <!-- Grid de Produtos -->
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Os cards serão injetados aqui via JavaScript -->
+            <div class="col-span-full text-center text-gray-400 py-10">
+                Clique no botão acima para fazer a requisição à API.
+            </div>
+        </div>
+    </main>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
