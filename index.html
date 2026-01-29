@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula: Consumo de API FakeStore</title>
+   <title>Aula: Consumo de API FakeStore</title>
     <!-- Importando Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Estilos adicionais específicos */
         .card-image {
             height: 200px;
-            object-fit: contain; /* Garante que a imagem apareça inteira */
+            object-fit: contain;
             width: 100%;
             padding: 10px;
+            transition: transform 0.3s ease;
         }
         
+        .card:hover .card-image {
+            transform: scale(1.05);
+        }
+
         /* Animação simples de loading */
         .spinner {
             border: 4px solid #f3f3f3;
@@ -30,16 +35,26 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Estilo para botão de categoria ativo */
+        .category-btn.active {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            border-color: #2563eb;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen font-sans">
 
     <!-- Cabeçalho -->
-    <header class="bg-blue-600 text-white p-6 shadow-md">
+    <header class="bg-blue-600 text-white p-6 shadow-md sticky top-0 z-10">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold">Conceito de API</h1>
-                <p class="text-blue-100 text-sm">Consumindo dados da FakeStoreAPI</p>
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    FakeStore App
+                </h1>
+                <p class="text-blue-100 text-sm">Consumo de API e Manipulação de DOM</p>
             </div>
             <button id="btnCarregar" class="mt-4 md:mt-0 bg-white text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-200 transition duration-300 shadow-sm active:scale-95">
                 Carregar Produtos
@@ -50,13 +65,37 @@
     <!-- Área Principal -->
     <main class="container mx-auto p-6">
         
-        <!-- Estado de Carregamento (Inicialmente escondido) -->
+        <!-- Controles de Interatividade (Invisível até carregar) -->
+        <div id="controls" class="hidden mb-8 space-y-4">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-lg shadow-sm">
+                <!-- Busca -->
+                <div class="w-full md:w-1/3 relative">
+                    <input type="text" id="searchInput" placeholder="Buscar por nome..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                
+                <!-- Ordenação -->
+                <select id="sortSelect" class="w-full md:w-1/4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <option value="default">Ordenar por</option>
+                    <option value="price-asc">Preço: Menor para Maior</option>
+                    <option value="price-desc">Preço: Maior para Menor</option>
+                    <option value="title-asc">Nome: A - Z</option>
+                </select>
+            </div>
+
+            <!-- Filtros de Categoria Dinâmicos -->
+            <div id="categoryFilters" class="flex flex-wrap gap-2 justify-center md:justify-start">
+                <!-- Botões gerados via JS -->
+            </div>
+        </div>
+
+        <!-- Estado de Carregamento -->
         <div id="loading" class="hidden text-center py-10">
             <div class="spinner"></div>
             <p class="text-gray-500 mt-2">Buscando dados no servidor...</p>
         </div>
 
-        <!-- Estado de Erro (Inicialmente escondido) -->
+        <!-- Estado de Erro -->
         <div id="error" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
             <p class="font-bold">Erro de Conexão</p>
             <p id="errorMessage">Não foi possível carregar os produtos.</p>
@@ -64,11 +103,19 @@
 
         <!-- Grid de Produtos -->
         <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Os cards serão injetados aqui via JavaScript -->
-            <div class="col-span-full text-center text-gray-400 py-10">
-                Clique no botão acima para fazer a requisição à API.
+            <div class="col-span-full text-center text-gray-400 py-10 bg-white rounded-lg border border-dashed border-gray-300">
+                <p class="text-lg">Clique no botão acima para iniciar</p>
+                <p class="text-sm">Os dados serão buscados da FakeStoreAPI</p>
             </div>
         </div>
+    </main>
+
+    <!-- Modal de Detalhes -->
+    <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full transform scale-95 transition-transform duration-300" id="modalContent">
+            <!-- Conteúdo injetado via JS -->
+        </div>
+    </div>
     </main>
     <script type="module" src="script.js"></script>
 </body>
